@@ -1,0 +1,84 @@
+<h1>
+🔹 Core Modules
+1. Customer Management Module
+Add, update, delete customer details
+Maintain customer profiles (name, contact, membership, history)
+Track customer visits and preferences
+__________________________________________________________________________________________
+
+
+2. Service Management Module
+Create and manage spa/fitness services (massage, gym plans, etc.)
+Set pricing, duration, and service categories
+Assign services to customers
+
+
+_______________________________________________________________________________
+3. Appointment / Booking Module
+Schedule appointments for customers
+Manage time slots and availability
+Handle booking status (बुक्ड, completed, cancelled)
+
+_______________________________________________________________________________
+4. Membership Management Module
+Create membership plans (monthly, yearly)
+Track active/expired memberships
+Renew and upgrade memberships
+
+______________________________________________________________________________
+5. Employee / Staff Management Module
+Manage staff details (trainers, therapists)
+Assign services to staff
+Track staff schedules and performance
+
+_______________________________________________________________________________
+6. Billing & Payment Module
+Generate invoices for services
+Handle payments (cash, online)
+Apply discounts, taxes (GST)
+
+
+________________________________________________________________________________
+7. Authentication & Authorization Module (JWT Security)
+User login & registration
+Role-based access (Admin, Staff, Customer)
+Secure APIs using JWT
+
+
+_________________________________________________________________________________
+8. Reports & Analytics Module
+Daily/Monthly revenue reports
+Customer activity reports
+Service performance insights
+
+
+
+____________________________________________________________________________________
+9. Notification Module
+Send SMS/Email for bookings & reminders
+Membership expiry alerts
+
+
+______________________________________________________________________________________
+10. Dashboard Module
+Overview of business metrics
+Quick stats (customers, revenue, bookings)
+
+______________________________________________________________________________________
+🔹 Optional Advanced Modules (Good for Resume Boost 🚀)
+Feedback & Rating System
+
+______________________________________________________________________________________
+Inventory Management (spa products, equipment)
+
+_______________________________________________________________________________________
+Offers & Discounts Module
+
+__________________________________________________________________________________________
+Multi-branch Management
+✅ Resume Line (Improved)
+
+You can write like this:
+
+Designed and developed a monolithic CRM system with modules including Customer Management, Service Management, Appointment Booking, Membership Handling, Billing, and JWT-based Authentication, improving operational efficiency for spa and fitness businesses.
+</h1>
