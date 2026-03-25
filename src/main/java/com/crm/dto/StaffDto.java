@@ -1,0 +1,19 @@
+package com.crm.dto;
+
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class StaffDto 
+{
+
+    private Long id;
+    private String name;
+    private String role; // e.g., Trainer, Therapist
+    private boolean active;
+}

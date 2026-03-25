@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback & Rating</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .star-rating {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ddd;
+        }
+        .star-rating .highlight,
+        .star-rating .selected {
+            color: gold;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Feedback & Rating</h2>
+
+    <!-- Feedback Form -->
+    <form id="feedback-form" class="mb-4">
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" id="customerName" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Feedback</label>
+            <textarea class="form-control" id="message" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Rating</label>
+            <div id="star-rating" class="star-rating">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <!-- Feedback List -->
+    <h4>All Feedback</h4>
+    <ul class="list-group" id="feedback-list"></ul>
+</div>
+
+<script>
+let selectedRating = 0;
+const stars = document.querySelectorAll('#star-rating span');
+
+// Highlight stars on hover
+stars.forEach(star => {
+    star.addEventListener('mouseover', () => {
+        const val = parseInt(star.getAttribute('data-value'));
+        stars.forEach(s => s.classList.remove('highlight'));
+        for (let i = 0; i < val; i++) {
+            stars[i].classList.add('highlight');
+        }
+    });
+
+    star.addEventListener('mouseout', () => {
+        stars.forEach(s => s.classList.remove('highlight'));
+        for (let i = 0; i < selectedRating; i++) {
+            stars[i].classList.add('selected');
+        }
+    });
+
+    star.addEventListener('click', () => {
+        selectedRating = parseInt(star.getAttribute('data-value'));
+        stars.forEach(s => s.classList.remove('selected'));
+        for (let i = 0; i < selectedRating; i++) {
+            stars[i].classList.add('selected');
+        }
+    });
+});
+
+async function loadFeedback() {
+    const response = await fetch('/feedback/all');
+    const feedbacks = await response.json();
+    const list = document.getElementById('feedback-list');
+    list.innerHTML = '';
+    feedbacks.forEach(f => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = `<strong>${f.customerName}</strong> (${f.rating}⭐) <br> ${f.message}`;
+        list.appendChild(li);
+    });
+}
+
+document.getElementById('feedback-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (selectedRating === 0) {
+        alert('Please select a rating!');
+        return;
+    }
+    const feedback = {
+        customerName: document.getElementById('customerName').value,
+        message: document.getElementById('message').value,
+        rating: selectedRating
+    };
+    await fetch('/feedback/submit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(feedback)
+    });
+    document.getElementById('feedback-form').reset();
+    selectedRating = 0;
+    stars.forEach(s => s.classList.remove('selected'));
+    loadFeedback();
+});
+
+// Load all feedback on page load
+loadFeedback();
+</script>
+</body>
+</html>
