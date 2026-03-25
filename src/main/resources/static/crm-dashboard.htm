@@ -4,188 +4,281 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CRM Dashboard</title>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <style>
-    body { background-color: #f8f9fa; }
-    .card { border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
-    .card-title { font-weight: 600; }
-    .star-rating { font-size: 1.8rem; cursor: pointer; color: #ddd; }
-    .star-rating .highlight, .star-rating .selected { color: gold; }
+body { background-color: #f8f9fa; }
+.card { border-radius: 15px; }
+#login-box { max-width: 400px; margin: 100px auto; }
 </style>
 </head>
+
 <body>
-<div class="container mt-5">
 
-    <!-- DASHBOARD METRICS -->
-    <h2 class="mb-4">CRM Dashboard</h2>
-    <div class="row mb-5" id="dashboard-cards">
-        <!-- Cards injected by JS -->
-    </div>
+<!-- ================= LOGIN ================= -->
+<div id="login-box" class="card p-4">
+    <h3 class="text-center mb-3">Login</h3>
 
-    <hr>
-
-    <!-- FEEDBACK & RATING -->
-    <h2 class="mb-4">Feedback & Rating</h2>
-    <form id="feedback-form" class="mb-4">
-        <div class="mb-3"><label>Name</label><input type="text" id="customerName" class="form-control" required></div>
-        <div class="mb-3"><label>Feedback</label><textarea id="message" class="form-control" rows="2" required></textarea></div>
-        <div class="mb-3"><label>Rating</label>
-            <div id="star-rating" class="star-rating">
-                <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    <form id="login-form">
+        <input type="email" id="email" class="form-control mb-2" placeholder="Email" required>
+        <input type="password" id="password" class="form-control mb-3" placeholder="Password" required>
+        <button class="btn btn-primary w-100">Login</button>
     </form>
-    <h4>All Feedback</h4>
-    <ul class="list-group mb-5" id="feedback-list"></ul>
 
-    <hr>
+    <small id="loginError" class="text-danger"></small>
+</div>
 
-    <!-- INVENTORY MANAGEMENT -->
-    <h2 class="mb-4">Inventory Management</h2>
-    <button class="btn btn-primary mb-3" onclick="showInventoryForm()">Add New Item</button>
-    <table class="table table-bordered table-striped" id="inventory-table">
-        <thead class="table-dark">
-            <tr><th>ID</th><th>Name</th><th>Category</th><th>Quantity</th><th>Price (₹)</th><th>Actions</th></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <div id="inventory-form-container" style="display:none;" class="mb-4">
-        <h5 id="inventory-form-title">Add Inventory Item</h5>
-        <form id="inventory-form">
-            <input type="hidden" id="inventoryId">
-            <div class="mb-3"><label>Name</label><input type="text" id="inventoryName" class="form-control" required></div>
-            <div class="mb-3"><label>Category</label><input type="text" id="inventoryCategory" class="form-control" required></div>
-            <div class="mb-3"><label>Quantity</label><input type="number" id="inventoryQuantity" class="form-control" required></div>
-            <div class="mb-3"><label>Price (₹)</label><input type="number" id="inventoryPrice" class="form-control" required></div>
-            <button type="submit" class="btn btn-success">Save</button>
-            <button type="button" class="btn btn-secondary" onclick="hideInventoryForm()">Cancel</button>
-        </form>
+<!-- ================= DASHBOARD ================= -->
+<div class="container mt-5" id="dashboard" style="display:none;">
+
+    <div class="d-flex justify-content-between">
+        <h2>CRM Dashboard</h2>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
     </div>
 
-    <hr>
+    <!-- INVENTORY -->
+    <div class="mt-5">
+        <h3>Inventory</h3>
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#inventoryModal">Add Item</button>
 
-    <!-- OFFERS & DISCOUNTS -->
-    <h2 class="mb-4">Offers & Discounts</h2>
-    <button class="btn btn-primary mb-3" onclick="showOfferForm()">Add New Offer</button>
-    <table class="table table-bordered table-striped" id="offers-table">
-        <thead class="table-dark">
-            <tr><th>ID</th><th>Name</th><th>Description</th><th>Discount %</th><th>Start Date</th><th>End Date</th><th>Actions</th></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <div id="offer-form-container" style="display:none;" class="mb-4">
-        <h5 id="offer-form-title">Add Offer</h5>
-        <form id="offer-form">
-            <input type="hidden" id="offerId">
-            <div class="mb-3"><label>Name</label><input type="text" id="offerName" class="form-control" required></div>
-            <div class="mb-3"><label>Description</label><textarea id="offerDescription" class="form-control" rows="2" required></textarea></div>
-            <div class="mb-3"><label>Discount %</label><input type="number" id="offerDiscount" class="form-control" required></div>
-            <div class="mb-3"><label>Start Date</label><input type="date" id="offerStartDate" class="form-control" required></div>
-            <div class="mb-3"><label>End Date</label><input type="date" id="offerEndDate" class="form-control" required></div>
-            <button type="submit" class="btn btn-success">Save</button>
-            <button type="button" class="btn btn-secondary" onclick="hideOfferForm()">Cancel</button>
-        </form>
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th><th>Name</th><th>Category</th><th>Qty</th><th>Price</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="inventory-body"></tbody>
+        </table>
     </div>
 
+    <!-- OFFERS -->
+    <div class="mt-5">
+        <h3>Offers</h3>
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#offerModal">Add Offer</button>
+
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th><th>Name</th><th>Desc</th><th>%</th><th>Start</th><th>End</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="offer-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ================= INVENTORY MODAL ================= -->
+<div class="modal fade" id="inventoryModal">
+<div class="modal-dialog">
+<div class="modal-content">
+<form id="inventory-form">
+<div class="modal-header">
+<h5>Inventory</h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+<input type="hidden" id="invId">
+<input class="form-control mb-2" id="invName" placeholder="Name" required>
+<input class="form-control mb-2" id="invCategory" placeholder="Category" required>
+<input class="form-control mb-2" id="invQty" type="number" placeholder="Quantity" required>
+<input class="form-control mb-2" id="invPrice" type="number" placeholder="Price" required>
+</div>
+
+<div class="modal-footer">
+<button class="btn btn-primary">Save</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+<!-- ================= OFFER MODAL ================= -->
+<div class="modal fade" id="offerModal">
+<div class="modal-dialog">
+<div class="modal-content">
+<form id="offer-form">
+<div class="modal-header">
+<h5>Offer</h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+<input type="hidden" id="offerId">
+<input class="form-control mb-2" id="offerName" placeholder="Name" required>
+<textarea class="form-control mb-2" id="offerDesc"></textarea>
+<input class="form-control mb-2" id="offerDiscount" type="number" placeholder="Discount" required>
+<input class="form-control mb-2" id="offerStart" type="date" required>
+<input class="form-control mb-2" id="offerEnd" type="date" required>
+</div>
+
+<div class="modal-footer">
+<button class="btn btn-success">Save</button>
+</div>
+</form>
+</div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-// --------------- DASHBOARD ----------------
-async function loadDashboardStats() {
-    try {
-        const [dataRes, feedbackRes] = await Promise.all([
-            fetch('/dashboard/stats'),
-            fetch('/feedback/stats')
-        ]);
-        const data = await dataRes.json();
-        const feedbackData = await feedbackRes.json();
-
-        const fullStars = Math.floor(feedbackData.averageRating);
-        const halfStar = feedbackData.averageRating % 1 >= 0.5 ? 1 : 0;
-        const emptyStars = 5 - fullStars - halfStar;
-        const starsDisplay = '★'.repeat(fullStars) + (halfStar?'⯪':'') + '☆'.repeat(emptyStars);
-
-        document.getElementById('dashboard-cards').innerHTML = `
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-primary h-100"><div class="card-body"><h5 class="card-title">Total Customers</h5><p class="card-text fs-2">${data.totalCustomers}</p></div></div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-success h-100"><div class="card-body"><h5 class="card-title">Total Bookings</h5><p class="card-text fs-2">${data.totalBookings}</p></div></div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-warning h-100"><div class="card-body"><h5 class="card-title">Total Revenue</h5><p class="card-text fs-2">₹ ${data.totalRevenue.toLocaleString()}</p></div></div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-info h-100"><div class="card-body"><h5 class="card-title">Average Rating</h5><p class="card-text fs-2">${starsDisplay} (${feedbackData.averageRating})</p><small>Total Feedbacks: ${feedbackData.totalFeedbacks}</small></div></div>
-        </div>`;
-    } catch(e) { console.error(e); }
+// ===== AUTH =====
+function authFetch(url, options={}) {
+    options.headers = {
+        ...(options.headers||{}),
+        'Authorization':'Bearer '+localStorage.getItem('jwtToken'),
+        'Content-Type':'application/json'
+    };
+    return fetch(url, options);
 }
 
-// --------------- FEEDBACK ----------------
-let selectedRating = 0;
-const stars = document.querySelectorAll('#star-rating span');
-stars.forEach(star=>{
-    star.addEventListener('mouseover',()=>{ const val=parseInt(star.dataset.value); stars.forEach(s=>s.classList.remove('highlight')); for(let i=0;i<val;i++) stars[i].classList.add('highlight'); });
-    star.addEventListener('mouseout',()=>{ stars.forEach(s=>s.classList.remove('highlight')); for(let i=0;i<selectedRating;i++) stars[i].classList.add('selected'); });
-    star.addEventListener('click',()=>{ selectedRating=parseInt(star.dataset.value); stars.forEach(s=>s.classList.remove('selected')); for(let i=0;i<selectedRating;i++) stars[i].classList.add('selected'); });
-});
-
-async function loadFeedback() {
-    const res = await fetch('/feedback/all');
-    const feedbacks = await res.json();
-    const list = document.getElementById('feedback-list');
-    list.innerHTML = '';
-    feedbacks.forEach(f=>{ const li=document.createElement('li'); li.className='list-group-item'; li.innerHTML=`<strong>${f.customerName}</strong> (${f.rating}⭐)<br>${f.message}`; list.appendChild(li); });
-}
-
-document.getElementById('feedback-form').addEventListener('submit', async e=>{
+// ===== LOGIN =====
+document.getElementById("login-form").addEventListener("submit", async e=>{
     e.preventDefault();
-    if(selectedRating===0){ alert('Please select a rating!'); return; }
-    const feedback={ customerName:document.getElementById('customerName').value, message:document.getElementById('message').value, rating:selectedRating };
-    await fetch('/feedback/submit',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(feedback) });
-    document.getElementById('feedback-form').reset();
-    selectedRating=0; stars.forEach(s=>s.classList.remove('selected'));
-    loadFeedback();
-    loadDashboardStats();
+
+    const res = await fetch("http://localhost:8080/auth/login", {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+            email: email.value,
+            password: password.value
+        })
+    });
+
+    if(!res.ok){
+        loginError.innerText="Invalid credentials";
+        return;
+    }
+
+    const data = await res.json();
+    localStorage.setItem("jwtToken", data.token);
+
+    init();
 });
 
-// --------------- INVENTORY ----------------
-async function loadInventory() {
-    const res = await fetch('/inventory/all');
-    const items = await res.json();
-    const tbody=document.querySelector('#inventory-table tbody');
-    tbody.innerHTML='';
-    items.forEach(i=>{ tbody.innerHTML+=`<tr><td>${i.id}</td><td>${i.name}</td><td>${i.category}</td><td>${i.quantity}</td><td>${i.price}</td><td><button class="btn btn-sm btn-warning" onclick="editInventory(${i.id})">Edit</button> <button class="btn btn-sm btn-danger" onclick="deleteInventory(${i.id})">Delete</button></td></tr>`; });
+// ===== LOGOUT =====
+function logout(){
+    localStorage.removeItem("jwtToken");
+    location.reload();
 }
-function showInventoryForm(){ document.getElementById('inventory-form-container').style.display='block'; document.getElementById('inventory-form-title').innerText='Add Inventory Item'; document.getElementById('inventory-form').reset(); document.getElementById('inventoryId').value=''; }
-function hideInventoryForm(){ document.getElementById('inventory-form-container').style.display='none'; }
-document.getElementById('inventory-form').addEventListener('submit', async e=>{ e.preventDefault(); const id=document.getElementById('inventoryId').value; const item={ id:id?parseInt(id):undefined, name:document.getElementById('inventoryName').value, category:document.getElementById('inventoryCategory').value, quantity:parseInt(document.getElementById('inventoryQuantity').value), price:parseFloat(document.getElementById('inventoryPrice').value) }; await fetch(id?'/inventory/update':'/inventory/add',{ method:id?'PUT':'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)}); hideInventoryForm(); loadInventory(); });
-async function editInventory(id){ const res=await fetch(`/inventory/${id}`); const item=await res.json(); document.getElementById('inventoryId').value=item.id; document.getElementById('inventoryName').value=item.name; document.getElementById('inventoryCategory').value=item.category; document.getElementById('inventoryQuantity').value=item.quantity; document.getElementById('inventoryPrice').value=item.price; document.getElementById('inventory-form-title').innerText='Edit Inventory Item'; document.getElementById('inventory-form-container').style.display='block'; }
-async function deleteInventory(id){ if(confirm('Are you sure?')){ await fetch(`/inventory/delete/${id}`,{method:'DELETE'}); loadInventory(); }}
 
-// --------------- OFFERS ----------------
-async function loadOffers() {
-    const res = await fetch('/offers/all');
-    const offers = await res.json();
-    const tbody=document.querySelector('#offers-table tbody');
-    tbody.innerHTML='';
-    offers.forEach(o=>{ tbody.innerHTML+=`<tr><td>${o.id}</td><td>${o.name}</td><td>${o.description}</td><td>${o.discountPercent}%</td><td>${o.startDate}</td><td>${o.endDate}</td><td><button class="btn btn-sm btn-warning" onclick="editOffer(${o.id})">Edit</button> <button class="btn btn-sm btn-danger" onclick="deleteOffer(${o.id})">Delete</button></td></tr>`; });
-}
-function showOfferForm(){ document.getElementById('offer-form-container').style.display='block'; document.getElementById('offer-form-title').innerText='Add Offer'; document.getElementById('offer-form').reset(); document.getElementById('offerId').value=''; }
-function hideOfferForm(){ document.getElementById('offer-form-container').style.display='none'; }
-document.getElementById('offer-form').addEventListener('submit', async e=>{ e.preventDefault(); const id=document.getElementById('offerId').value; const offer={ id:id?parseInt(id):undefined, name:document.getElementById('offerName').value, description:document.getElementById('offerDescription').value, discountPercent:parseFloat(document.getElementById('offerDiscount').value), startDate:document.getElementById('offerStartDate').value, endDate:document.getElementById('offerEndDate').value }; await fetch(id?'/offers/update':'/offers/add',{ method:id?'PUT':'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(offer)}); hideOfferForm(); loadOffers(); });
-async function editOffer(id){ const res=await fetch(`/offers/${id}`); const o=await res.json(); document.getElementById('offerId').value=o.id; document.getElementById('offerName').value=o.name; document.getElementById('offerDescription').value=o.description; document.getElementById('offerDiscount').value=o.discountPercent; document.getElementById('offerStartDate').value=o.startDate; document.getElementById('offerEndDate').value=o.endDate; document.getElementById('offer-form-title').innerText='Edit Offer'; document.getElementById('offer-form-container').style.display='block'; }
-async function deleteOffer(id){ if(confirm('Are you sure?')){ await fetch(`/offers/delete/${id}`,{method:'DELETE'}); loadOffers(); }}
+// ===== INIT =====
+function init(){
+    if(!localStorage.getItem("jwtToken")) return;
 
-// ----------------- INITIAL LOAD -----------------
-window.onload = ()=>{
-    loadDashboardStats();
-    loadFeedback();
+    login-box.style.display="none";
+    dashboard.style.display="block";
+
     loadInventory();
     loadOffers();
-};
+}
+
+// ===== INVENTORY =====
+async function loadInventory(){
+    const res = await authFetch("http://localhost:8080/inventory/all");
+    const data = await res.json();
+
+    let html="";
+    data.forEach(i=>{
+        html+=`<tr>
+        <td>${i.id}</td>
+        <td>${i.name}</td>
+        <td>${i.category}</td>
+        <td>${i.quantity}</td>
+        <td>${i.price}</td>
+        <td>
+        <button class='btn btn-warning btn-sm' onclick="editInv(${i.id})">Edit</button>
+        <button class='btn btn-danger btn-sm' onclick="delInv(${i.id})">Del</button>
+        </td>
+        </tr>`;
+    });
+
+    document.getElementById("inventory-body").innerHTML=html;
+}
+
+document.getElementById("inventory-form").addEventListener("submit", async e=>{
+    e.preventDefault();
+
+    const id = invId.value;
+
+    const obj={
+        id: id||undefined,
+        name: invName.value,
+        category: invCategory.value,
+        quantity: parseInt(invQty.value),
+        price: parseFloat(invPrice.value)
+    };
+
+    await authFetch(id?"/inventory/update":"/inventory/add",{
+        method: id?"PUT":"POST",
+        body: JSON.stringify(obj)
+    });
+
+    loadInventory();
+});
+
+async function delInv(id){
+    await authFetch("/inventory/delete/"+id,{method:"DELETE"});
+    loadInventory();
+}
+
+// ===== OFFERS =====
+async function loadOffers(){
+    const res = await authFetch("http://localhost:8080/offers/all");
+    const data = await res.json();
+
+    let html="";
+    data.forEach(o=>{
+        html+=`<tr>
+        <td>${o.id}</td>
+        <td>${o.name}</td>
+        <td>${o.description}</td>
+        <td>${o.discountPercent}</td>
+        <td>${o.startDate}</td>
+        <td>${o.endDate}</td>
+        <td>
+        <button class='btn btn-warning btn-sm' onclick="editOffer(${o.id})">Edit</button>
+        <button class='btn btn-danger btn-sm' onclick="delOffer(${o.id})">Del</button>
+        </td>
+        </tr>`;
+    });
+
+    document.getElementById("offer-body").innerHTML=html;
+}
+
+document.getElementById("offer-form").addEventListener("submit", async e=>{
+    e.preventDefault();
+
+    const id = offerId.value;
+
+    const obj={
+        id:id||undefined,
+        name: offerName.value,
+        description: offerDesc.value,
+        discountPercent: parseFloat(offerDiscount.value),
+        startDate: offerStart.value,
+        endDate: offerEnd.value
+    };
+
+    await authFetch(id?"/offers/update":"/offers/add",{
+        method:id?"PUT":"POST",
+        body: JSON.stringify(obj)
+    });
+
+    loadOffers();
+});
+
+async function delOffer(id){
+    await authFetch("/offers/delete/"+id,{method:"DELETE"});
+    loadOffers();
+}
+
+// ===== START =====
+window.onload=init;
+
 </script>
+
 </body>
 </html>
